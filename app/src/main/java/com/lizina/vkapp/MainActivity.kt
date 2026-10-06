@@ -111,7 +111,7 @@ fun OpenSecondActivity(
         onClick = {
             if (text.isBlank()) {
                 scope.launch {
-                    snackbarHostState.showSnackbar("Введите текст для передачи")
+                    snackbarHostState.showSnackbar("Введите текст для передачи в SecondActivity")
                 }
                 return@Button
             }
@@ -227,6 +227,7 @@ fun OpenActionDial(
     ) { Text("Позвонить другу") }
 }
 
+// 3. Системный Intent — ACTION_SEND
 @Composable
 fun OpenActionSend(
     text: String,
