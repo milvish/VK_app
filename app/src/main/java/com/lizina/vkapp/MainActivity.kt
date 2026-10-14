@@ -20,10 +20,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             VKAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+
+                    /*
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
+
+                     */
+                    AppDescription()
                 }
             }
         }
