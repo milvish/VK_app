@@ -7,6 +7,3 @@
 ## Часть 2
 ![practice_4.part_2.video.gif](assets/practice_4/practice_4.part_2.video.gif)
 
-# Практическое задание 5
-
-![practice_5.gif](assets/practice_5.gif)
