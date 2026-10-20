@@ -1,4 +1,4 @@
-package com.lizina.vkapp
+package com.lizina.vkapp.domain.appdetails
 
 import androidx.compose.runtime.Composable
 import kotlinx.serialization.SerialName

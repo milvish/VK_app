@@ -1,4 +1,4 @@
-package com.lizina.vkapp
+package com.lizina.vkapp.domain.appdetails
 
 data class AppDetails(
     val id: String,
