@@ -1,12 +1,11 @@
-package com.lizina.vkapp
+package com.lizina.vkapp.presentation.appdetails
 
 import androidx.compose.foundation.Image
-import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,17 +17,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,16 +34,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.lizina.vkapp.Category
+import com.lizina.vkapp.Destination
+import com.lizina.vkapp.R
+import com.lizina.vkapp.domain.appdetails.AppDetails
+import com.lizina.vkapp.domain.appdetails.Category
+import com.lizina.vkapp.domain.appdetails.getCategoryText
 import com.lizina.vkapp.ui.theme.VKAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppDescription() {
+fun AppListScreen(navController: NavController) {
+
+
     Scaffold(topBar = {
         TopAppBar(
         title = { Text(text = "") },
@@ -72,7 +78,8 @@ fun AppDescription() {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(hardcodedApps) { app ->
-                AppListItem(app = app)
+                AppListItem(app = app, navController = navController,
+                    route = Destination.AppDetailsContentDestination(app.id))
             }
         }
     }
@@ -82,9 +89,16 @@ fun AppDescription() {
 
 
 @Composable
-fun AppListItem(app: AppDetails) {
+fun AppListItem(
+    app: AppDetails,
+    navController: NavController,
+    route: Destination,
+) {
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(enabled = true, onClick = {
+            navController.navigate(route)
+        }),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -129,7 +143,7 @@ fun AppListItem(app: AppDetails) {
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -157,7 +171,6 @@ val hardcodedApps = listOf(
         size = 12.5f,
         iconUrl = "https://static.rustore.ru/imgproxy/5sBMIYzbT5DMeNed7qy0BdEbRxgXf6Xya2gRIHWlr24/preset:web_app_icon_160/plain/https://static.rustore.ru/apk/2063634664/content/ICON/559fdb6b-69bc-4340-a9b7-4bf4a467f84b.jpg@webp",
         screenshotUrlList = listOf(
-            "https://static.rustore.ru/imgproxy/3cTEYGXICqtm6CS8ihmEyMB30WKlg496Hmrq9F6Slco/preset:web_app_icon_62/plain/https://static.rustore.ru/apk/2063634664/content/ICON/559fdb6b-69bc-4340-a9b7-4bf4a467f84b.jpg@webp",
             "https://static.rustore.ru/imgproxy/nc8OVoaaa5mq7qT3Es5cre90yqP-SZUUyogkMqQGIOk/preset:web_scr_prt_162/plain/https://static.rustore.ru/2025/12/17/f2/apk/2063634664/content/SCREENSHOT/085bb269-b5da-4b2c-abbc-0c7fb874e208.jpg@webp",
             "https://static.rustore.ru/imgproxy/N4rw4pU4TUpOsmcupsMDg_tqfcdpbcKIsTIO7iwFF6I/preset:web_scr_prt_162/plain/https://static.rustore.ru/apk/2063634664/content/SCREENSHOT/6b9ad18e-a374-43aa-be96-af93441d4659.jpg@webp",
             "https://static.rustore.ru/imgproxy/mv3FgD8MmP6iJymwu4GOTGPTjx-pI0Hl6uZbWsxfT5k/preset:web_scr_prt_162/plain/https://static.rustore.ru/apk/2063634664/content/SCREENSHOT/10b2e6fa-c040-4e3e-a507-07b54415b824.jpg@webp"
@@ -168,7 +181,7 @@ val hardcodedApps = listOf(
         id = "b1e4a8c3-9012-4def-7745-32f9a1b8c7d6",
         name = "Погода",
         developer = "Utilities Team",
-        category = Category.UTILITIES, // или выбери подходящую категорию
+        category = Category.UTILITIES,
         ageRating = 3,
         size = 8.2f,
         iconUrl = "https://static.rustore.ru/imgproxy/g_FEnTsf6hvUd49Q4-7P4wj-cvdBE-40V2zNVpQPz5E/preset:web_app_icon_62/plain/https://static.rustore.ru/apk/937663/content/ICON/4984fd0f-f97c-4e73-85e5-474880cce068.png@webp",
@@ -333,8 +346,8 @@ val hardcodedApps = listOf(
 
 @Preview
 @Composable
-private fun AppDescriptionPreview() {
+private fun AppListScreenPreview() {
     VKAppTheme() {
-        AppDescription()
+        //AppListScreen()
     }
 }
