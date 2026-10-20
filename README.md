@@ -5,4 +5,4 @@
 </p>
 
 ## Часть 2
-![practice_4.part_2.video.webm](assets/practice_4/practice_4.part_2.video.webm)
+![practice_4.part_2.video.gif](assets/practice_4/practice_4.part_2.video.gif)

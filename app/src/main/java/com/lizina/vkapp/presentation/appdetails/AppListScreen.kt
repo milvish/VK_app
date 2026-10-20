@@ -23,10 +23,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,25 +44,46 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.lizina.vkapp.AppListViewModel
 import com.lizina.vkapp.Destination
 import com.lizina.vkapp.R
 import com.lizina.vkapp.domain.appdetails.AppDetails
 import com.lizina.vkapp.domain.appdetails.Category
 import com.lizina.vkapp.domain.appdetails.getCategoryText
 import com.lizina.vkapp.ui.theme.VKAppTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppListScreen(navController: NavController) {
+fun AppListScreen(
+    navController: NavController,
+                  viewModel: AppListViewModel = viewModel()
+) {
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    val apps by viewModel.apps.collectAsStateWithLifecycle()
+    val message by viewModel.snackbarMessage.collectAsStateWithLifecycle()
+
+    LaunchedEffect(message) {
+        message?.let { msg ->
+            scope.launch {
+                snackbarHostState.showSnackbar(msg)
+                viewModel.clearSnackbar()
+            }
+        }
+    }
 
     Scaffold(topBar = {
         TopAppBar(
         title = { Text(text = "") },
         navigationIcon = {
-            IconButton(onClick = { /* действие */ }) {
+            IconButton(onClick = { viewModel.onLogoClicked() }) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher_foreground),
                     contentDescription = "Иконка приложения",
@@ -69,7 +96,8 @@ fun AppListScreen(navController: NavController) {
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
         )
-    }
+    },
+        snackbarHost = {  SnackbarHost(snackbarHostState) },
     ){ innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -77,7 +105,7 @@ fun AppListScreen(navController: NavController) {
                 .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(hardcodedApps) { app ->
+            items(apps) { app ->
                 AppListItem(app = app, navController = navController,
                     route = Destination.AppDetailsContentDestination(app.id))
             }
