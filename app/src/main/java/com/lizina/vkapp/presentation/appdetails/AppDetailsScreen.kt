@@ -15,8 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.lizina.vkapp.AppDetailsViewModel
 import com.lizina.vkapp.R
 import kotlinx.coroutines.flow.Flow
 
@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.Flow
 fun AppDetailsScreen(
     navController: NavController,
     userId: String,
-    viewModel: AppDetailsViewModel = AppDetailsViewModel(userId)
+    viewModel: AppDetailsViewModel = viewModel(
+        factory = AppDetailsViewModelFactory(userId)
+    ),
 ) {
 
     val state by viewModel.state.collectAsState()
@@ -55,7 +57,7 @@ fun AppDetailsScreen(
 
             is AppDetailsState.Error -> {
                 AppDetailsError(
-                    onRefreshClick = { viewModel.getAppDetails() },
+                    onRefreshClick = { viewModel.loadAppDetails() },
                     modifier = Modifier
                         .fillMaxSize()
                         .safeDrawingPadding()

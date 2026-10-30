@@ -26,7 +26,7 @@ import coil3.compose.AsyncImage
 import com.lizina.vkapp.R
 import com.lizina.vkapp.domain.appdetails.AppDetails
 import com.lizina.vkapp.domain.appdetails.Category
-import com.lizina.vkapp.domain.appdetails.getCategoryText
+import com.lizina.vkapp.presentation.mapper.getCategoryText
 import com.lizina.vkapp.ui.theme.VKAppTheme
 import kotlin.math.roundToInt
 
