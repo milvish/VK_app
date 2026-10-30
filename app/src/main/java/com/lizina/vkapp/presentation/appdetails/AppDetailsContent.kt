@@ -98,13 +98,17 @@ fun AppDetailsContent(
         )
 
         Spacer(Modifier.height(12.dp))
-        ShopWindowBlock(navController = navController,
+        ShopWindowBlock(
+            navController = navController,
+            apps = content.showcaseApps,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp),)
+                .padding(start = 16.dp),
+        )
     }
 }
 
+/*
 @Preview
 @Composable
 private fun Preview() {
@@ -148,3 +152,5 @@ private fun Preview() {
         )
     }
 }
+
+ */

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,27 +11,24 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.lizina.vkapp.Destination
 import com.lizina.vkapp.domain.appdetails.AppDetails
+import com.lizina.vkapp.presentation.navigation.Destination
 import com.lizina.vkapp.ui.theme.VKAppTheme
 
 
 @Composable
-fun ShopWindowBlock(navController: NavController, modifier: Modifier) {
-    val showcaseApps = hardcodedApps.shuffled().take(9)
-
-    fun getShowcasePages(): List<List<AppDetails>> {
-        return showcaseApps.chunked(3) // [0..2], [3..5], [6..8]
-    }
-
-
-    val pages = getShowcasePages()
-
-    val pagerState = rememberPagerState(initialPage = 0){ pages.size }
+fun ShopWindowBlock(
+    navController: NavController,
+    apps: List<AppDetails>,
+    modifier: Modifier = Modifier,
+) {
+    val pages = remember(apps) { apps.chunked(3) }
+    val pagerState = rememberPagerState(initialPage = 0) { pages.size }
 
     Column(modifier = modifier) {
         Text(text = "Витрина")
@@ -47,7 +43,7 @@ fun ShopWindowBlock(navController: NavController, modifier: Modifier) {
             val appsInPage = pages[pageIndex]
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -60,7 +56,6 @@ fun ShopWindowBlock(navController: NavController, modifier: Modifier) {
                 }
             }
         }
-
     }
 }
 
