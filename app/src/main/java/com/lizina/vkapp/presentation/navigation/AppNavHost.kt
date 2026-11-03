@@ -22,10 +22,9 @@ fun AppNavHost() {
     ){
         composable<Destination.AppListDestination>{ AppListScreen(navController = navController) }
         composable<Destination.AppDetailsContentDestination> { backStackEntry ->
-            val routeInfo = backStackEntry.toRoute<Destination.AppDetailsContentDestination>()
+            // val routeInfo = backStackEntry.toRoute<Destination.AppDetailsContentDestination>()
             AppDetailsScreen(
                 navController = navController,
-                userId = routeInfo.userId
             )
 
         }

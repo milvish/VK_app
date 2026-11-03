@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.lizina.vkapp.R
@@ -23,10 +24,7 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun AppDetailsScreen(
     navController: NavController,
-    userId: String,
-    viewModel: AppDetailsViewModel = viewModel(
-        factory = AppDetailsViewModelFactory(userId)
-    ),
+    viewModel: AppDetailsViewModel = hiltViewModel(),
 ) {
 
     val state by viewModel.state.collectAsState()
