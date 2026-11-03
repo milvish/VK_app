@@ -2,9 +2,10 @@ package com.lizina.vkapp.data.source
 
 import com.lizina.vkapp.data.dto.AppDetailsDto
 import com.lizina.vkapp.data.dto.SimilarAppDto
+import javax.inject.Inject
 
 
-class HardcodedAppsDataSource {
+class HardcodedAppsDataSource @Inject constructor() {
     val apps: List<AppDetailsDto> = listOf(
         AppDetailsDto(
             id = "a7f3c9d2-5678-4abc-8823-91b4c8d5e6f7",

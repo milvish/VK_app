@@ -1,11 +1,13 @@
 package com.lizina.vkapp.presentation.appdetails
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lizina.vkapp.domain.appdetails.GetAppDetailsUseCase
 import com.lizina.vkapp.domain.appdetails.GetAppsUseCase
 import com.lizina.vkapp.domain.appdetails.GetSimilarAppsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -15,14 +17,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class AppDetailsViewModel(
-    initialUserId: String?,
+@HiltViewModel
+class AppDetailsViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val getAppDetails: GetAppDetailsUseCase,
     private val getSimilarApps: GetSimilarAppsUseCase,
     private val getApps: GetAppsUseCase
 ) : ViewModel() {
+
+    private val _userId = MutableStateFlow<String>(savedStateHandle.get<String>("userId") ?: "")
+    val userId = _userId.asStateFlow()
 
 
     private val _events = Channel<AppDetailsEvent>(BUFFERED)
@@ -31,8 +37,6 @@ class AppDetailsViewModel(
     private val _state = MutableStateFlow<AppDetailsState>(AppDetailsState.Loading)
     val state = _state.asStateFlow()
 
-    private val _userId = MutableStateFlow<String>(initialUserId ?: "")
-    val userId = _userId.asStateFlow()
 
     fun setUserId(newId: String) {
         _userId.value = newId

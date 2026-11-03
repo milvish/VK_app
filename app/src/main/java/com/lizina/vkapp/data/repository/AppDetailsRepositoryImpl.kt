@@ -7,8 +7,9 @@ import com.lizina.vkapp.domain.appdetails.AppDetailsRepository
 import com.lizina.vkapp.domain.appdetails.SimilarApp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class AppDetailsRepositoryImpl(
+class AppDetailsRepositoryImpl @Inject constructor(
     private val source: HardcodedAppsDataSource
 ) : AppDetailsRepository {
 
