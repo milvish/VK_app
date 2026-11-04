@@ -1,7 +1,6 @@
 package com.lizina.vkapp.presentation.appdetails
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lizina.vkapp.domain.appdetails.GetAppDetailsUseCase
@@ -21,15 +20,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppDetailsViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val getAppDetails: GetAppDetailsUseCase,
     private val getSimilarApps: GetSimilarAppsUseCase,
-    private val getApps: GetAppsUseCase
+    private val getApps: GetAppsUseCase,
 ) : ViewModel() {
-
-    private val _userId = MutableStateFlow<String>(savedStateHandle.get<String>("userId") ?: "")
-    val userId = _userId.asStateFlow()
-
 
     private val _events = Channel<AppDetailsEvent>(BUFFERED)
     val events = _events.receiveAsFlow()
@@ -37,31 +31,18 @@ class AppDetailsViewModel @Inject constructor(
     private val _state = MutableStateFlow<AppDetailsState>(AppDetailsState.Loading)
     val state = _state.asStateFlow()
 
-
-    fun setUserId(newId: String) {
-        _userId.value = newId
-    }
-
     private var loadingJob: Job? = null
 
-    init {
-        viewModelScope.launch {
-            _userId.collect { id ->
-                if (id.isNotEmpty()) {
-                    loadAppDetails()
-                }
-            }
-        }
-    }
-
-    fun loadAppDetails() {
+    fun loadAppDetails(id: String) {
+        Log.d("AppDetailsVM", "loadAppDetails, id='$id'")
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
             _state.value = AppDetailsState.Loading
             try {
                 val similar = getSimilarApps()
                 val showcase = getApps().shuffled().take(9)
-                getAppDetails(userId.value).collect { appDetails ->
+
+                getAppDetails(id).collect { appDetails ->
                     val currentState = _state.value
                     _state.value = AppDetailsState.Content(
                         appDetails = appDetails,
@@ -75,7 +56,7 @@ class AppDetailsViewModel @Inject constructor(
                 throw e
             } catch (e: Exception) {
                 _state.value = AppDetailsState.Error
-                Log.e("AppDetailsViewModel", "Failed to load app details", e)
+                Log.e("AppDetailsVM", "Failed to load app details for id='$id'", e)
             }
         }
     }

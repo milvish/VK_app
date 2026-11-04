@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.lizina.vkapp.R
 import kotlinx.coroutines.flow.Flow
@@ -24,8 +23,12 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun AppDetailsScreen(
     navController: NavController,
+    appId: String,
     viewModel: AppDetailsViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(appId) {
+        viewModel.loadAppDetails(appId)
+    }
 
     val state by viewModel.state.collectAsState()
     val events = viewModel.events
@@ -38,9 +41,7 @@ fun AppDetailsScreen(
     )
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(snackbarHostState)
-        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.background(MaterialTheme.colorScheme.surface)
     ) { contentPadding ->
         when (val currentState = state) {
@@ -55,7 +56,7 @@ fun AppDetailsScreen(
 
             is AppDetailsState.Error -> {
                 AppDetailsError(
-                    onRefreshClick = { viewModel.loadAppDetails() },
+                    onRefreshClick = { viewModel.loadAppDetails(appId) },
                     modifier = Modifier
                         .fillMaxSize()
                         .safeDrawingPadding()
@@ -68,7 +69,6 @@ fun AppDetailsScreen(
                     navController = navController,
                     content = currentState,
                     onBackClick = {
-                        // TODO: Открыть предыдущий экран через Jetpack Navigation
                         viewModel.showUnderDevelopmentMessage()
                     },
                     onShareClick = {
@@ -101,13 +101,13 @@ private fun ObserveEvents(
     events: Flow<AppDetailsEvent>,
     snackbarHostState: SnackbarHostState,
 ) {
-    val underDevelopementText = stringResource(R.string.under_development)
+    val underDevelopmentText = stringResource(R.string.under_development)
 
     LaunchedEffect(Unit) {
         events.collect { event ->
             when (event) {
                 is AppDetailsEvent.UnderDevelopment -> {
-                    snackbarHostState.showSnackbar(underDevelopementText)
+                    snackbarHostState.showSnackbar(underDevelopmentText)
                 }
             }
         }
