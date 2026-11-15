@@ -9,6 +9,9 @@ import com.lizina.vkapp.domain.appdetails.SimilarApp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 class AppDetailsRepositoryImpl @Inject constructor(
     private val api: VkAppApi,
@@ -52,4 +55,19 @@ class AppDetailsRepositoryImpl @Inject constructor(
     override suspend fun getApps(): List<AppDetails> =
         api.getCatalog().map { it.toDomain() }
         //source.apps.map { it.toDomain() }
+
+    override suspend fun loadRatingsSequentially(ids: List<String>): Map<String, Float> {
+        val result = linkedMapOf<String, Float>()
+        for (id in ids) {
+            result[id] = api.getRating(id)
+        }
+        return result
+    }
+
+    override suspend fun loadRatingsInParallel(ids: List<String>): Map<String, Float> =
+        coroutineScope {
+            ids.map { id ->
+                async { id to api.getRating(id) }
+            }.awaitAll().toMap()
+        }
 }
