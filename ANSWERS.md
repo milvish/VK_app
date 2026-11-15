@@ -14,7 +14,6 @@
 
 <img src="assets/practice_9/practice_9_task_1.gif" alt="Gif Кнопка отмены" width="200"/>
 
-
 ## Задание 2. Загрузка рейтингов
 
 `VkAppApi.getRating(id)` эмулирует сетевой запрос: `delay(1500)` + случайное значение
