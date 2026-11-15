@@ -11,12 +11,17 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class AppDetailsViewModel @Inject constructor(
@@ -32,6 +37,7 @@ class AppDetailsViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     private var loadingJob: Job? = null
+    private var installJob: Job? = null
 
     fun loadAppDetails(id: String) {
         Log.d("AppDetailsVM", "loadAppDetails, id='$id'")
@@ -50,6 +56,8 @@ class AppDetailsViewModel @Inject constructor(
                         showcaseApps = showcase,
                         descriptionCollapsed = (currentState as? AppDetailsState.Content)
                             ?.descriptionCollapsed ?: false,
+                        installState = (currentState as? AppDetailsState.Content)
+                            ?.installState ?: InstallState.NotInstalled,
                     )
                 }
             } catch (e: CancellationException) {
@@ -57,6 +65,53 @@ class AppDetailsViewModel @Inject constructor(
             } catch (e: Exception) {
                 _state.value = AppDetailsState.Error
                 Log.e("AppDetailsVM", "Failed to load app details for id='$id'", e)
+            }
+        }
+    }
+
+    fun onInstallClick() {
+        val current = _state.value
+        if (current !is AppDetailsState.Content) return
+
+        when (current.installState) {
+            is InstallState.Installing -> {
+                updateInstallState(InstallState.NotInstalled)
+                installJob?.cancel()
+                installJob = null
+            }
+
+            is InstallState.NotInstalled -> {
+                installJob = viewModelScope.launch {
+                    try {
+                        emulateInstall()
+                    } catch (e: CancellationException) {
+                        throw e
+                    }
+                }
+            }
+
+            is InstallState.Installed -> {
+            }
+        }
+    }
+
+    private suspend fun emulateInstall() {
+        for (progress in 0..100 step 5) {
+            delay(150.milliseconds)
+            currentCoroutineContext().ensureActive()
+            updateInstallState(InstallState.Installing(progress))
+        }
+        currentCoroutineContext().ensureActive()
+        updateInstallState(InstallState.Installed)
+        installJob = null
+    }
+
+    private fun updateInstallState(newState: InstallState) {
+        _state.update { currentState ->
+            if (currentState is AppDetailsState.Content) {
+                currentState.copy(installState = newState)
+            } else {
+                currentState
             }
         }
     }
