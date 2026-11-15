@@ -8,4 +8,7 @@ interface AppDetailsRepository {
     suspend fun getSimilarApps(): List<SimilarApp>
 
     suspend fun getApps(): List<AppDetails>
+
+    suspend fun loadRatingsSequentially(ids: List<String>): Map<String, Float>
+    suspend fun loadRatingsInParallel(ids: List<String>): Map<String, Float>
 }

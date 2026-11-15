@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.lizina.vkapp.domain.appdetails.AppDetails
 import com.lizina.vkapp.domain.appdetails.SimilarApp
 
-
 @Immutable
 sealed interface AppDetailsState {
     data object Error : AppDetailsState
@@ -14,5 +13,6 @@ sealed interface AppDetailsState {
         val similarApps: List<SimilarApp>,
         val showcaseApps: List<AppDetails>,
         val descriptionCollapsed: Boolean,
+        val installState: InstallState = InstallState.NotInstalled,
     ) : AppDetailsState
 }
